@@ -4,59 +4,64 @@ VAANI AI is a GenAI-based job preparation application that helps students and jo
 
 The main goal of this project is to make interview preparation more interactive instead of just providing a list of questions.
 
+---
+
 ## Product Overview
 
 VAANI AI allows users to:
 
-* Enter their profile and technical skills
+* Create a candidate profile
+* Enter their technical skills
 * Start an AI-based interview
 * Answer questions one by one
 * Get questions based on their selected skills
-* Get evaluated on their answers
+* Get AI-based answer evaluation
 * Receive feedback and scores
-* Continue with questions based on their previous answers
-* Track their performance across different skills
+* Get adaptive follow-up questions
+* Experience difficulty adjustment
+* Get project deep-dive questions
+* View final assessment and skill scores
+* Track their interview performance
 
 The application is mainly designed for students and freshers preparing for software development interviews.
 
 ---
 
-## Architecture
-
-The application follows a simple frontend-backend architecture.
+# Architecture
 
 ```text
-                User
-                  |
-                  v
-        React + Vite Frontend
-               (Vercel)
-                  |
-                  | REST API
-                  v
-          Node.js + Express
-              (Render)
-                  |
-        +---------+---------+
-        |                   |
-        v                   v
-    MongoDB Atlas       GenAI Model
-                         |
-                         v
-                  Answer Evaluation
-                  Question Generation
+                         User
+                           |
+                           v
+                 React + Vite Frontend
+                        (Vercel)
+                           |
+                           | REST API
+                           v
+                  Node.js + Express
+                       (Render)
+                           |
+              +------------+------------+
+              |                         |
+              v                         v
+         MongoDB Atlas             Gemini API
+                                      |
+                                      v
+                              Question Generation
+                              Answer Evaluation
 ```
 
 ### Frontend
 
 The frontend is developed using React and Vite. It handles:
 
-* User profile input
-* Interview screen
+* Candidate profile
+* Interview interface
 * Question display
 * Answer submission
-* Feedback display
-* Score display
+* Feedback
+* Final assessment
+* Dashboard
 
 ### Backend
 
@@ -71,6 +76,7 @@ It handles:
 * Difficulty adaptation
 * Skill scoring
 * Database operations
+* Gemini API integration
 
 ### Database
 
@@ -84,139 +90,161 @@ MongoDB Atlas is used to store interview-related information.
 
 ---
 
-## Technology Choices
+# Technology Stack
 
-### React.js
+### Frontend
 
-React was used because it provides a component-based structure and makes it easier to build interactive interview screens.
+* React.js
+* Vite
+* Axios
+* JavaScript
+* CSS
 
-### Vite
+### Backend
 
-Vite provides fast development and a simple build process for the React application.
+* Node.js
+* Express.js
+* REST API
+* Axios
 
-### Node.js
+### Database
 
-Node.js is used for the backend because it works well with JavaScript and asynchronous API requests.
+* MongoDB
+* Mongoose
+* MongoDB Atlas
 
-### Express.js
+### AI
 
-Express is used to create REST APIs and manage the backend routes.
+* Google Gemini API
+* Generative AI
+* Prompt Engineering
 
-### MongoDB
+### Deployment
 
-MongoDB is used because interview data can have different structures and MongoDB provides a flexible document-based database.
-
-### Axios
-
-Axios is used in the frontend for communication with the backend APIs.
-
-### Vercel
-
-Vercel is used to deploy the React frontend.
-
-### Render
-
-Render is used to deploy the Node.js and Express backend.
+* Vercel
+* Render
 
 ---
 
 # AI Model
 
-VAANI AI uses a Generative AI model for generating interview questions and evaluating user answers.
+VAANI AI uses the Gemini API for:
 
-The model is used for two main tasks:
-
-1. Question generation
-2. Answer evaluation
+1. Generating interview questions
+2. Evaluating candidate answers
+3. Generating follow-up questions
+4. Adapting question difficulty
+5. Providing interview feedback
 
 The AI receives information such as:
 
 * Candidate skills
 * Experience level
+* Target role
 * Previous questions
 * Previous answers
 * Current difficulty
-* Interview context
-
-Based on this information, it generates the next question or evaluates the submitted answer.
+* Current skill
 
 ---
 
 # Prompt Strategy
 
-Instead of sending only the user's answer to the AI model, VAANI provides structured context.
+The application does not send only the candidate's answer to Gemini.
 
-The prompt contains information such as:
+The backend creates a structured prompt containing relevant interview context.
 
 ```text
-Candidate Skills
-Experience Level
+Candidate Profile
+        +
+Technical Skills
+        +
 Current Skill
+        +
 Current Difficulty
+        +
 Previous Questions
+        +
 Previous Answers
+        +
 Current Answer
+        ↓
+    Gemini API
+        ↓
+Structured Evaluation
 ```
 
-The AI is instructed to return structured evaluation information.
-
-For example:
+The AI is instructed to provide structured information such as:
 
 ```json
 {
-  "score": 7,
+  "score": 8,
   "correctness": 8,
-  "technical_depth": 6,
-  "clarity": 7,
-  "feedback": "Good explanation but the answer can include more details."
+  "technical_depth": 7,
+  "clarity": 8,
+  "feedback": "Good explanation with relevant technical details."
 }
 ```
 
-Structured responses make it easier for the backend to process the evaluation and calculate the candidate's skill score.
+This structured response makes it easier for the backend to process the evaluation and calculate the candidate's performance.
 
 ---
 
-# Adaptive Questioning Logic
+# Adaptive Questioning
 
-VAANI AI does not ask the same type of question throughout the interview.
-
-The next question is selected based on the candidate's previous performance.
+VAANI AI changes the next question based on the candidate's previous answer.
 
 For example:
 
 ```text
-Good Answer
-     |
-     v
-Increase difficulty
-     |
-     v
-Medium/Hard Question
+Strong Answer
+     ↓
+Increase Difficulty
+     ↓
+Deeper Follow-up Question
 ```
 
 If the candidate struggles:
 
 ```text
 Weak Answer
-     |
-     v
-Reduce difficulty
-     |
-     v
-Easier Question
+     ↓
+Reduce Difficulty
+     ↓
+Simpler Question
 ```
 
-This makes the interview more similar to a real interview where the interviewer changes the difficulty based on the candidate's responses.
+This makes the interview more interactive and personalized.
+
+---
+
+# Difficulty Adaptation
+
+The interview uses different difficulty levels:
+
+```text
+Easy
+Medium
+Hard
+```
+
+The difficulty is adjusted based on recent performance.
+
+```text
+Strong Performance
+Easy → Medium → Hard
+```
+
+```text
+Weak Performance
+Hard → Medium → Easy
+```
 
 ---
 
 # Answer Evaluation
 
-After the candidate submits an answer, the answer is sent to the backend.
-
-The AI evaluates different aspects of the answer.
-
-Some of the evaluation factors are:
+The AI evaluates the candidate's answer based on factors such as:
 
 * Correctness
 * Technical knowledge
@@ -225,119 +253,82 @@ Some of the evaluation factors are:
 * Clarity
 * Completeness
 
-The evaluation result is converted into a score.
-
-For example:
+Example:
 
 ```text
 Correctness       : 8/10
 Technical Depth   : 7/10
 Clarity           : 8/10
 Relevance         : 9/10
---------------------------------
 Overall Score     : 8/10
 ```
 
-The feedback is also shown to the user so they understand where they can improve.
+The candidate also receives feedback explaining how the answer can be improved.
 
 ---
 
-# Difficulty Adaptation
+# Project Deep-Dive
 
-The interview maintains a current difficulty level.
+VAANI can ask questions about the candidate's projects.
 
-The difficulty can be:
+For example, if a candidate mentions a MERN or GenAI project, VAANI can ask:
 
-```text
-Easy
-Medium
-Hard
-```
+* Why did you choose MongoDB?
+* Why did you use React?
+* How did you design the backend?
+* How did you integrate the Gemini API?
+* What technical challenges did you face?
+* How did you handle API failures?
+* How did you deploy the application?
 
-The difficulty is adjusted based on the candidate's recent performance.
-
-For example:
-
-```text
-Strong performance
-        ↓
-Easy → Medium → Hard
-```
-
-If the candidate gives weak answers:
-
-```text
-Weak performance
-        ↓
-Hard → Medium → Easy
-```
-
-This prevents the interview from becoming too easy or too difficult for the candidate.
+This helps evaluate whether the candidate actually understands the projects mentioned in their profile.
 
 ---
 
 # Skill Scoring
 
-VAANI AI also tracks performance based on individual skills.
+VAANI tracks performance for individual skills.
 
-For example, if the candidate selects:
-
-```text
-JavaScript
-React
-Node.js
-MongoDB
-```
-
-the application can maintain separate scores:
+For example:
 
 ```text
 JavaScript : 8.2
-React      : 7.5
-Node.js    : 6.8
+React      : 8.5
+Node.js    : 7.8
 MongoDB    : 8.0
 ```
 
-This helps the candidate understand which technical areas are strong and which areas need more preparation.
+This allows candidates to identify their strong and weak areas.
 
 ---
 
 # Duplicate Question Detection
 
-One problem with AI-generated interviews is that the model can sometimes generate similar questions.
+AI models can sometimes generate similar questions.
 
-To reduce this problem, previous questions are provided to the AI when generating a new question.
+VAANI provides previous questions as context when generating a new question and instructs the AI to avoid repeating them.
 
-The model is instructed not to repeat previous questions.
-
-The application can also compare the newly generated question with previous questions before accepting it.
-
-The basic flow is:
+The flow is:
 
 ```text
 Generate Question
-       |
-       v
-Compare with Previous Questions
-       |
-   +---+---+
-   |       |
-Duplicate  New
-   |       |
-   v       v
-Generate  Accept
-Again
+       ↓
+Compare With Previous Questions
+       ↓
+   Duplicate?
+    /     \
+  Yes      No
+   |        |
+Regenerate Accept
 ```
-
-This helps keep the interview more dynamic.
 
 ---
 
 # Database Design
 
-MongoDB Atlas is used as the database.
+MongoDB Atlas is used for storing interview information.
 
-The interview data contains information such as:
+The interview data can contain:
 
 ```text
 Interview
@@ -346,8 +337,8 @@ Interview
 ├── Skills
 ├── Questions
 │   ├── Question
-│   ├── Difficulty
 │   ├── Skill
+│   ├── Difficulty
 │   └── Answer
 │
 ├── Evaluations
@@ -356,16 +347,14 @@ Interview
 │   ├── Correctness
 │   └── Technical Depth
 │
-└── Overall Results
+└── Final Assessment
 ```
 
-MongoDB was selected because the interview structure can change depending on the candidate's skills and the number of questions.
+MongoDB was selected because its flexible document structure works well with interview data that can contain different questions, evaluations, and skills.
 
 ---
 
 # API Structure
-
-The backend exposes interview APIs.
 
 Main API base:
 
@@ -373,82 +362,335 @@ Main API base:
 /api/interview
 ```
 
-Example endpoints:
+### Start Interview
 
-```text
+```http
 POST /api/interview/start
 ```
 
-Starts a new interview.
+Creates a new interview session.
 
-```text
+### Submit Answer
+
+```http
 POST /api/interview/:id/answer
 ```
 
 Submits an answer and evaluates it.
 
-```text
+### Get Interview
+
+```http
 GET /api/interview/:id
 ```
 
-Gets the interview details.
+Gets the interview information.
+
+---
+
+# Run the Project Locally
+
+## Prerequisites
+
+Before running VAANI AI locally, make sure you have installed:
+
+* Node.js
+* npm
+* MongoDB Atlas account
+* Gemini API key
+* Git
+
+You can check Node.js and npm using:
+
+```bash
+node -v
+npm -v
+```
+
+---
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/Jayasankar-Bollam/Vaani-AI.git
+```
+
+Move into the project:
+
+```bash
+cd Vaani-AI
+```
+
+---
+
+# 2. Setup Backend
+
+Go to the server folder:
+
+```bash
+cd server
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create a `.env` file inside the `server` folder:
+
+```text
+server/
+├── routes/
+├── ...
+├── package.json
+└── .env
+```
+
+Add your backend environment variables:
+
+```env
+PORT=3000
+MONGO_URI=your_mongodb_connection_string
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+Use the actual environment variable names used by your backend code.
+
+**Do not commit your `.env` file to GitHub.**
+
+Start the backend:
+
+```bash
+npm start
+```
+
+If your project does not have an `npm start` script, use the command defined in your `server/package.json`.
+
+The backend should run at:
+
+```text
+http://localhost:3000
+```
+
+You can test the health endpoint:
+
+```text
+http://localhost:3000/api/health
+```
+
+---
+
+# 3. Setup Frontend
+
+Open another terminal.
+
+From the project root:
+
+```bash
+cd client
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create:
+
+```text
+client/.env
+```
+
+Add:
+
+```env
+VITE_API_URL=http://localhost:3000/api/interview
+```
+
+The frontend API configuration uses:
+
+```js
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "/api/interview",
+});
+```
+
+Start the frontend:
+
+```bash
+npm run dev
+```
+
+Vite will normally provide a URL similar to:
+
+```text
+http://localhost:5173
+```
+
+Open that URL in your browser.
+
+---
+
+# 4. Run Frontend and Backend Together
+
+You need two terminals.
+
+### Terminal 1 — Backend
+
+```bash
+cd server
+npm install
+npm start
+```
+
+### Terminal 2 — Frontend
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+Then open:
+
+```text
+http://localhost:5173
+```
+
+The request flow will be:
+
+```text
+React
+  ↓
+http://localhost:3000/api/interview
+  ↓
+Express
+  ↓
+Gemini API
+  ↓
+MongoDB
+```
+
+---
+
+# Environment Variables
+
+### Backend
+
+Keep backend secrets inside:
+
+```text
+server/.env
+```
+
+Example:
+
+```env
+PORT=3000
+MONGO_URI=your_mongodb_uri
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+### Frontend
+
+The frontend only needs the backend API URL:
+
+```env
+VITE_API_URL=http://localhost:3000/api/interview
+```
+
+For production:
+
+```env
+VITE_API_URL=https://vaani-ai-t82t.onrender.com/api/interview
+```
+
+Do not put secret API keys such as the Gemini API key inside the frontend environment variables.
+
+---
+
+# Deployment
+
+## Frontend
+
+The frontend is deployed using Vercel.
+
+Production API URL:
+
+```text
+https://vaani-ai-t82t.onrender.com/api/interview
+```
+
+Set the following environment variable in Vercel:
+
+```text
+VITE_API_URL=https://vaani-ai-t82t.onrender.com/api/interview
+```
+
+After changing environment variables, redeploy the Vercel application.
+
+## Backend
+
+The backend is deployed using Render.
+
+The backend uses the Render-provided `PORT` environment variable.
+
+The server listens on:
+
+```js
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, "0.0.0.0");
+```
 
 ---
 
 # Limitations
 
-There are some limitations in the current version.
-
-### 1. AI Dependency
+### AI Dependency
 
 The quality of questions and evaluations depends on the AI model.
 
-Sometimes the model may generate questions that are too easy, too difficult, or similar to previous questions.
+### AI Evaluation
 
-### 2. Evaluation is Not Perfect
+AI evaluation may not always understand every possible valid answer.
 
-AI-based evaluation cannot always understand every valid way of answering a technical question.
+### API Limits
 
-A candidate may give a correct answer in a different way and still receive a lower score.
+The application depends on the availability and rate limits of the Gemini API.
 
-### 3. Limited Interview Types
+### Text-Based Interview
 
-The current version mainly focuses on technical interview preparation.
+The current version mainly focuses on text-based technical interviews.
 
-Behavioral interviews, HR interviews, and system design interviews can be improved further.
+### Limited Interview Types
 
-### 4. API Availability
-
-The application depends on the availability and limits of the AI API.
-
-If the AI service is unavailable, question generation and evaluation may fail.
-
-### 5. No Real-Time Voice Interview
-
-The current version mainly works with text-based answers.
-
-Voice-based interviews are not fully implemented yet.
+The current version mainly focuses on technical interview preparation. HR and behavioral interviews can be expanded further.
 
 ---
 
 # Future Improvements
 
-Some improvements I would like to add in the future are:
+Some improvements planned for the future are:
 
 * Voice-based AI interviews
 * Speech-to-text support
 * Real-time AI interviewer
-* More advanced system design interviews
 * HR and behavioral interview mode
 * Resume-based interview questions
-* Job-description-based interview preparation
+* Job-description-based preparation
+* Advanced system design interviews
 * Better duplicate question detection
-* Improved skill-level prediction
-* Interview history and progress tracking
+* Improved skill prediction
+* Interview history
+* Progress tracking
 * Personalized learning recommendations
-* More detailed performance analytics
+* Detailed performance analytics
 * Multiple AI model support
-* Interview difficulty customization
 
 ---
 
@@ -456,45 +698,50 @@ Some improvements I would like to add in the future are:
 
 While building VAANI AI, I learned how to integrate Generative AI into a full-stack application.
 
-I also learned about:
+I gained practical experience in:
 
-* React application development
+* React development
 * REST API development
-* MongoDB database design
-* AI prompt engineering
+* Node.js and Express.js
+* MongoDB and Mongoose
+* Gemini API integration
+* Prompt engineering
 * Structured AI responses
-* AI-based answer evaluation
 * Adaptive question generation
-* Environment variables
+* AI-based answer evaluation
+* Error handling
 * CORS
+* Environment variables
 * Vercel deployment
 * Render deployment
 * Connecting frontend and backend in production
-
-The project helped me understand how AI can be combined with a normal full-stack application to build a more personalized user experience.
 
 ---
 
 # Future Vision
 
-The long-term goal of VAANI AI is to make it behave more like a real technical interviewer.
+The long-term goal of VAANI AI is to behave more like a real technical interviewer.
 
-Instead of only asking predefined questions, the system should understand the candidate's responses, identify knowledge gaps, ask follow-up questions, adjust difficulty, and provide a complete preparation plan.
+Instead of only asking predefined questions, VAANI should understand the candidate's responses, identify knowledge gaps, ask relevant follow-up questions, adjust difficulty, and provide a personalized preparation plan.
 
 ```text
-Profile
-   ↓
+Candidate Profile
+       ↓
 AI Interview
-   ↓
+       ↓
 Answer Evaluation
-   ↓
+       ↓
 Skill Analysis
-   ↓
+       ↓
 Adaptive Questions
-   ↓
-Performance Report
-   ↓
+       ↓
+Project Deep-Dive
+       ↓
+Final Assessment
+       ↓
+Dashboard
+       ↓
 Personalized Preparation
 ```
 
-VAANI AI is built as a learning project to explore how Generative AI, full-stack development, and adaptive interview systems can work together.
+VAANI AI is a full-stack GenAI project built to explore how Generative AI and adaptive interview systems can be combined to create a more personalized interview preparation experience.
